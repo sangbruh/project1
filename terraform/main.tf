@@ -58,11 +58,15 @@ resource "aws_security_group" "TF_SG" {
   }
 }
 
-
 resource "aws_instance" "web" {
   ami           = "ami-0fe8bec493a81c7da"
   instance_type = "t3.micro"
   key_name = "netflix-clone-key"
+  security_groups = [aws_security_group.TF_SG.name]
+  ebs_block_device {
+    volume_size = 25
+    device_name = "/dev/sda1"
+  }
 
   tags = {
     Name = "HelloWorld"
