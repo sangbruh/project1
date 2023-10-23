@@ -1,3 +1,7 @@
+provider "aws" {
+  region = "eu-north-1"
+}
+
 resource "aws_key_pair" "netflix-clone-key" {
   key_name   = "netflix-clone-key"
   public_key = tls_private_key.rsa.public_key_openssh
