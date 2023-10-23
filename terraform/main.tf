@@ -49,6 +49,33 @@ resource "aws_security_group" "TF_SG" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
+    ingress {
+    description      = "Docker"
+    from_port        = 8081
+    to_port          = 8081
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  ingress {
+    description      = "Jenkins"
+    from_port        = 8080
+    to_port          = 8080
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  ingress {
+    description      = "SonarQube"
+    from_port        = 9000
+    to_port          = 9000
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
   egress {
     from_port        = 0
     to_port          = 0
@@ -64,7 +91,7 @@ resource "aws_security_group" "TF_SG" {
 
 resource "aws_instance" "web" {
   ami           = "ami-0fe8bec493a81c7da"
-  instance_type = "t3.micro"
+  instance_type = "t3.large"
   key_name = "netflix-clone-key"
   security_groups = [aws_security_group.TF_SG.name]
   ebs_block_device {
