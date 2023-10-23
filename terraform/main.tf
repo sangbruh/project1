@@ -72,3 +72,7 @@ resource "aws_instance" "web" {
     Name = "HelloWorld"
   }
 }
+
+resource "aws_eip" "elasticip" {
+  instance = aws_instance.web.id
+}
