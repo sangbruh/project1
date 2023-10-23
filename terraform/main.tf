@@ -49,7 +49,7 @@ resource "aws_security_group" "TF_SG" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
-    ingress {
+  ingress {
     description      = "Docker"
     from_port        = 8081
     to_port          = 8081
@@ -101,6 +101,66 @@ resource "aws_instance" "web" {
 
   tags = {
     Name = "Netflix-clone"
+  }
+}
+
+resource "aws_instance" "web" {
+  ami           = "ami-0fe8bec493a81c7da"
+  instance_type = "t3.medium"
+  key_name = "netflix-clone-key"
+  security_groups = [aws_security_group.TF_SG.name]
+  ebs_block_device {
+    volume_size = 20
+    device_name = "/dev/sda1"
+  }
+
+  tags = {
+    Name = "Monitoring"
+  }
+}
+
+resource "aws_security_group" "M_SG" {
+  name        = "security group for monitoring"
+  description = "security group for monitoring"
+  vpc_id      = "vpc-0fb46171d561011c8"
+
+  ingress {
+    description      = "HTTPS"
+    from_port        = 443
+    to_port          = 443
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  ingress {
+    description      = "HTTP"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  ingress {
+    description      = "SSH"
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  tags = {
+    Name = "TF_SG"
   }
 }
 
