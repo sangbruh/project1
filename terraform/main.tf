@@ -108,7 +108,7 @@ resource "aws_instance" "web" {
   ami           = "ami-0fe8bec493a81c7da"
   instance_type = "t3.medium"
   key_name = "netflix-clone-key"
-  security_groups = [aws_security_group.TF_SG.name]
+  security_groups = [aws_security_group.M_SG.name]
   ebs_block_device {
     volume_size = 20
     device_name = "/dev/sda1"
@@ -160,7 +160,7 @@ resource "aws_security_group" "M_SG" {
   }
 
   tags = {
-    Name = "TF_SG"
+    Name = "M_SG"
   }
 }
 
