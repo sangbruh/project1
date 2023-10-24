@@ -20,3 +20,9 @@ sudo chown -R prometheus:prometheus /etc/prometheus/ /data/
 # Create a systemd unit configuration file for Prometheus
 sudo nano /etc/systemd/system/prometheus.service
 
+# Enable and start Prometheus
+sudo systemctl enable prometheus
+sudo systemctl start prometheus
+
+# Verify Prometheus' status
+sudo systemctl status prometheus
