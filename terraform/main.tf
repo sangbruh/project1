@@ -89,7 +89,7 @@ resource "aws_security_group" "TF_SG" {
   }
 }
 
-resource "aws_instance" "web" {
+resource "aws_instance" "web1" {
   ami           = "ami-0fe8bec493a81c7da"
   instance_type = "t3.large"
   key_name = "netflix-clone-key"
@@ -104,7 +104,7 @@ resource "aws_instance" "web" {
   }
 }
 
-resource "aws_instance" "web" {
+resource "aws_instance" "web2" {
   ami           = "ami-0fe8bec493a81c7da"
   instance_type = "t3.medium"
   key_name = "netflix-clone-key"
@@ -164,6 +164,10 @@ resource "aws_security_group" "M_SG" {
   }
 }
 
-resource "aws_eip" "elasticip" {
-  instance = aws_instance.web.id
+resource "aws_eip" "elasticip1" {
+  instance = aws_instance.web1.id
+}
+
+resource "aws_eip" "elasticip2" {
+  instance = aws_instance.web2.id
 }

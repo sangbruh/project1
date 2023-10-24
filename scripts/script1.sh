@@ -1,4 +1,5 @@
 #!/bin/bash
+# Searches for package updates and installs them
 sudo apt update && sudo apt upgrade -y && sudo apt full-upgrade -y
 
 # Install and set up Docker
