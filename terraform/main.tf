@@ -100,7 +100,7 @@ resource "aws_instance" "web1" {
   }
 
   tags = {
-    Name = "Netflix-clone"
+    Name = "Netflix-clone-jenkins"
   }
 }
 
