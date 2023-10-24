@@ -160,6 +160,15 @@ resource "aws_security_group" "M_SG" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
+    ingress {
+    description      = "Grafana"
+    from_port        = 3000
+    to_port          = 3000
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
   egress {
     from_port        = 0
     to_port          = 0
