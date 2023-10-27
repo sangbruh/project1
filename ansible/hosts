@@ -1,0 +1,5 @@
+[appservers]
+ubuntu@13.49.188.107
+
+[monitoringservers]
+ubuntu@13.51.94.248

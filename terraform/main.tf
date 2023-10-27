@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
 provider "aws" {
   region = "eu-north-1"
 }
@@ -17,7 +26,7 @@ resource "local_file" "netflix-clone-key" {
   filename = "tfkey"
 }
 
-resource "aws_security_group" "TF_SG" {
+resource "aws_security_group" "Terraform_SecurityGroup" {
   name        = "security group using Terraform"
   description = "security group using Terraform"
   vpc_id      = "vpc-0fb46171d561011c8"
@@ -93,7 +102,7 @@ resource "aws_instance" "web1" {
   ami           = "ami-0fe8bec493a81c7da"
   instance_type = "t3.large"
   key_name = "netflix-clone-key"
-  security_groups = [aws_security_group.TF_SG.name]
+  security_groups = [aws_security_group.Terraform_SecurityGroup.name]
   ebs_block_device {
     volume_size = 25
     device_name = "/dev/sda1"
@@ -108,7 +117,7 @@ resource "aws_instance" "web2" {
   ami           = "ami-0fe8bec493a81c7da"
   instance_type = "t3.medium"
   key_name = "netflix-clone-key"
-  security_groups = [aws_security_group.M_SG.name]
+  security_groups = [aws_security_group.Monitoring_SecurityGroup.name]
   ebs_block_device {
     volume_size = 20
     device_name = "/dev/sda1"
@@ -119,7 +128,7 @@ resource "aws_instance" "web2" {
   }
 }
 
-resource "aws_security_group" "M_SG" {
+resource "aws_security_group" "Monitoring_SecurityGroup" {
   name        = "security group for monitoring"
   description = "security group for monitoring"
   vpc_id      = "vpc-0fb46171d561011c8"

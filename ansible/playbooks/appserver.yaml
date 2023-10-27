@@ -1,0 +1,10 @@
+---
+- name: Update web server
+  hosts: appservers
+  remote_user: ubuntu
+
+  tasks:
+  - name: Install latest version of Docker
+    ansible.builtin.apt:
+      name: docker.io
+      state: latest

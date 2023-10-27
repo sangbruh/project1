@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source = "hashicorp/azurerm"
-      version = "~>2.0"
+      version = "~> 3.0.0"
     }
   }
 }
@@ -12,10 +12,66 @@ provider "azurerm" {
     
   }
 
-  subscription_id   = 
-  tenant_id         = "<azure_subscription_tenant_id>"
-  client_id         = "<service_principal_appid>"
-  client_secret     = "<service_principal_password>"
+  subscription_id   = "d3148a22-b81a-449a-bc50-0bba25000739"
+  tenant_id         = "b2bef9cc-a32a-4b44-875b-f91f37e59d83"
+  client_id         = "e56d1db0-e263-4816-b5e5-70ee53a5bd84"
+  client_secret     = "JQh8Q~V2IWfyFuv2XFVLF7e4rOh5AKoCcYjh4cxA"
+}
+
+resource "azurerm_resource_group" "main" {
+  name     = "netflix-clone"
+  location =  "eastus"
+}
+
+resource "azurerm_virtual_network" "main" {
+  name                = "netflix-clone-network"
+  address_space       = ["10.0.0.0/22"]
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+}
+
+resource "azurerm_subnet" "internal" {
+  name                 = "internal"
+  resource_group_name  = azurerm_resource_group.main.name
+  virtual_network_name = azurerm_virtual_network.main.name
+  address_prefixes     = ["10.0.2.0/24"]
+}
+
+resource "azurerm_network_interface" "main" {
+  name                = "netflix-clone-nic"
+  resource_group_name = azurerm_resource_group.main.name
+  location            = azurerm_resource_group.main.location
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.internal.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+
+resource "azurerm_linux_virtual_machine" "main" {
+  name                            = "netflix-clone-vm"
+  resource_group_name             = azurerm_resource_group.main.name
+  location                        = "eastus"
+  size                            = "Standard_B2s"
+  admin_username                  = "sang123?"
+  admin_password                  = "sang123?"
+  disable_password_authentication = false
+  network_interface_ids = [
+    azurerm_network_interface.main.id,
+  ]
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "0001-com-ubuntu-server-focal"
+    sku       = "22_04-lts"
+    version   = "latest"
+  }
+
+  os_disk {
+    storage_account_type = "Standard_LRS"
+    caching              = "ReadWrite"
+  }
 }
 
 /*resource "aws_key_pair" "netflix-clone-key" {
