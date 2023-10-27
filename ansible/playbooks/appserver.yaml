@@ -12,11 +12,6 @@
       clone: yes
       update: yes
 
-  #- name: Build Docker image
-  #  command: docker build --build-arg TMDB_V3_API_KEY=a7d735d4b740040b74814b3b48822c5c -t netflix .
-  #  args:
-  #    chdir: /home/ubuntu/DevSecOps-Project
-
   - name: Upgrade all apt packages
     apt: upgrade=dist force_apt_get=yes
 
@@ -38,5 +33,29 @@
     community.docker.docker_image:
       build:
         path: /home/ubuntu/DevSecOps-Project/
+        args: TMDB_V3_API_KEY=a7d735d4b740040b74814b3b48822c5c
       name: netflix
       source: build
+
+  
+  - name: Create Docker container for the netflix-clone app
+    docker_container:
+      name: netflix
+      state: started
+      image: sangbruh/netflix:latest
+      pull: true
+      ports:
+        - "8081:80"
+
+  - name: Create Docker container for SonarQube
+    docker_container:
+      name: netflix
+      state: started
+      image: sonarqube:lts-community
+      pull: true
+      container_default_behavior: "compatibility"
+      ports:
+        - "9000:9000"
+
+  - name: Install OpenJDK 17.0.8.1+1
+    apt: name=openjdk-17-jre
