@@ -2,9 +2,41 @@
 - name: Update web server
   hosts: appservers
   remote_user: ubuntu
+  become: true
 
   tasks:
-  - name: Install latest version of Docker
-    ansible.builtin.apt:
-      name: docker.io
-      state: latest
+  - name: Clone the GitHub repository
+    git:
+      repo: https://github.com/N4si/DevSecOps-Project.git
+      dest: /home/ubuntu/DevSecOps-Project/
+      clone: yes
+      update: yes
+
+  #- name: Build Docker image
+  #  command: docker build --build-arg TMDB_V3_API_KEY=a7d735d4b740040b74814b3b48822c5c -t netflix .
+  #  args:
+  #    chdir: /home/ubuntu/DevSecOps-Project
+
+  - name: Upgrade all apt packages
+    apt: upgrade=dist force_apt_get=yes
+
+  - name: Ensure Docker repository key is installed
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+  - name: Ensure Docker registry is available
+    apt_repository: repo='deb https://download.docker.com/linux/ubuntu jammy stable' state=present
+
+  - name: Ensure Docker and dependencies are installed
+    apt: name=docker.io
+
+  - name: Install required system packages
+    apt: name=python3-docker state=latest update_cache=yes
+
+  - name: Build the Docker image
+    community.docker.docker_image:
+      build:
+        path: /home/ubuntu/DevSecOps-Project/
+      name: netflix
+      source: build
