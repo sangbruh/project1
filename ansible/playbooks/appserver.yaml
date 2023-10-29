@@ -4,58 +4,82 @@
   remote_user: ubuntu
   become: true
 
-  tasks:
-  - name: Clone the GitHub repository
+  pre_tasks:
+  - name: Update apt-get, repo and cache
+    apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+
+  - name: Clone the GitHub repository for the project
     git:
       repo: https://github.com/N4si/DevSecOps-Project.git
       dest: /home/ubuntu/DevSecOps-Project/
       clone: yes
       update: yes
 
-  - name: Upgrade all apt packages
-    apt: upgrade=dist force_apt_get=yes
-
-  - name: Ensure Docker repository key is installed
-    apt_key:
-      url: https://download.docker.com/linux/ubuntu/gpg
-      state: present
-
-  - name: Ensure Docker registry is available
-    apt_repository: repo='deb https://download.docker.com/linux/ubuntu jammy stable' state=present
-
-  - name: Ensure Docker and dependencies are installed
-    apt: name=docker.io
-
-  - name: Install required system packages
+  - name: Install required python3-docker packages for running Docker containers
     apt: name=python3-docker state=latest update_cache=yes
-
-  - name: Build the Docker image
-    community.docker.docker_image:
-      build:
-        path: /home/ubuntu/DevSecOps-Project/
-        args: TMDB_V3_API_KEY=a7d735d4b740040b74814b3b48822c5c
-      name: netflix
-      source: build
-
   
+  roles:
+    - ansible-role-java
+    - ansible-role-docker
+    - ansible-role-trivy
+#    - ansible-role-jenkins
+
+#  - name: Ensure Docker repository key is installed
+#    apt_key:
+#      url: https://download.docker.com/linux/ubuntu/gpg
+#      state: present
+
+#  - name: Ensure Docker registry is available
+#    apt_repository: repo='deb https://download.docker.com/linux/ubuntu jammy stable' state=present
+
+#  - name: Ensure Docker and dependencies are installed
+#    apt: name=docker.io
+
+#  - name: Install required system packages
+#    apt: name=python3-docker state=latest update_cache=yes
+
+#  - name: Build the Docker image
+#    community.docker.docker_image:
+#      build:
+#        path: /home/ubuntu/DevSecOps-Project/
+#        args: TMDB_V3_API_KEY=a7d735d4b740040b74814b3b48822c5c
+#      name: netflix
+#      source: build
+  tasks:
   - name: Create Docker container for the netflix-clone app
     docker_container:
       name: netflix
       state: started
       image: sangbruh/netflix:latest
+      container_default_behavior: "compatibility"
       pull: true
       ports:
         - "8081:80"
 
   - name: Create Docker container for SonarQube
     docker_container:
-      name: netflix
+      name: sonar
       state: started
       image: sonarqube:lts-community
-      pull: true
       container_default_behavior: "compatibility"
+      pull: true
       ports:
         - "9000:9000"
+      
+  - name: Create Docker container for Jenkins
+    docker_container:
+      name: jenkins
+      state: started
+      image: jenkins/jenkins:lts-jdk17
+      container_default_behavior: "compatibility"
+      pull: true
+      ports:
+        - "8080:8080"
 
-  - name: Install OpenJDK 17.0.8.1+1
-    apt: name=openjdk-17-jre
+#  - name: Create Docker container for Trivy
+#    docker_container:
+#      name: trivy
+#      state: started
+#      image: aquasec/trivy
+#      container_default_behavior: "compatibility"
+#      pull: true

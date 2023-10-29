@@ -11,8 +11,8 @@ provider "aws" {
   region = "eu-north-1"
 }
 
-resource "aws_key_pair" "netflix-clone-key" {
-  key_name   = "netflix-clone-key"
+resource "aws_key_pair" "ansible-testing-key" {
+  key_name   = "ansible-testing-key"
   public_key = tls_private_key.rsa.public_key_openssh
 }
 
@@ -21,7 +21,7 @@ resource "tls_private_key" "rsa" {
   rsa_bits  = 4096
 }
 
-resource "local_file" "netflix-clone-key" {
+resource "local_file" "ansible-testing-key" {
   content  = tls_private_key.rsa.private_key_pem
   filename = "tfkey"
 }
@@ -101,7 +101,7 @@ resource "aws_security_group" "Application_SecurityGroup" {
 resource "aws_instance" "web1" {
   ami           = "ami-0fe8bec493a81c7da"
   instance_type = "t3.large"
-  key_name = "netflix-clone-key"
+  key_name = "ansible-testing-key"
   security_groups = [aws_security_group.Application_SecurityGroup.name]
   ebs_block_device {
     volume_size = 25
@@ -109,10 +109,14 @@ resource "aws_instance" "web1" {
   }
 
   tags = {
-    Name = "Netflix-clone-jenkins"
+    Name = "Ansible-testing"
   }
 }
 
+resource "aws_eip" "elasticip1" {
+  instance = aws_instance.web1.id
+}
+/*
 resource "aws_instance" "web2" {
   ami           = "ami-0fe8bec493a81c7da"
   instance_type = "t3.medium"
@@ -191,10 +195,7 @@ resource "aws_security_group" "Monitoring_SecurityGroup" {
   }
 }
 
-resource "aws_eip" "elasticip1" {
-  instance = aws_instance.web1.id
-}
-
 resource "aws_eip" "elasticip2" {
   instance = aws_instance.web2.id
 }
+*/
