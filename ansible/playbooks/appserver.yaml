@@ -83,3 +83,7 @@
 #      image: aquasec/trivy
 #      container_default_behavior: "compatibility"
 #      pull: true
+
+  post_tasks:
+  - name: Add Docker to Jenkins group
+    command: usermod -aG docker jenkins
